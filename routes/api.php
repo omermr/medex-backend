@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\Frontend\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('auth')->group(function () {
+    Route::post('login', [AuthenticationController::class, 'login']);
+    Route::post('register', [AuthenticationController::class,'register']);
+
+    Route::middleware(['web'])->group(function () {
+        Route::get('{provider}/redirect', [AuthenticationController::class, 'redirect']);
+        Route::get('{provider}/callback', [AuthenticationController::class, 'callback']);
+    });
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::post('logout', [AuthenticationController::class,'logout']);
+        Route::post('verification-code', [AuthenticationController::class, 'sendVerificationCode']);
+        Route::post('verify-verification-code', [AuthenticationController::class, 'verifyVerificationCode']);
+    });
+});
+
+Route::prefix('patient')->middleware(['api', 'auth:sanctum'])->group(function () {
+    Route::put('profile', [ProfileController::class, 'update']);
 });
