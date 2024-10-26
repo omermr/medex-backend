@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserService extends BaseService
 {
@@ -19,28 +20,32 @@ class UserService extends BaseService
         $this->otpService = $otpService;
     }
 
-    public function create(array $data)
+    public function create(array $data, string $role = User::PATIENT)
     {
         try {
             DB::beginTransaction();
 
-            $data['type'] = User::PATIENT;
+            $data['role'] = $role;
+            $data['password'] = Hash::make($data['email']);
+
             $user = User::create($data);
-            $this->otpService->generate($user, OTP::EMAIL_VERIFICATION);
+            if ($role == User::PATIENT) {
+                $this->otpService->generate($user, OTP::EMAIL_VERIFICATION);
+            }
 
             DB::commit();
 
-            return $this->success(['isSuccess' => true], 'Check your email for OTP verification!');
+            return $this->success(['user' => $user, 'isSuccess' => true], 'Check your email for OTP verification!');
         } catch (Exception $e) {
             DB::rollBack();
             return $this->error([], $e->getMessage(), 422);
         }
     }
 
-    public function updateUserProfile(array $data)
+    public function updateUserProfile(array $data, int $userId = null)
     {
         try {
-            $user = User::find(Auth::guard('sanctum')->id());
+            $user = User::find($userId ?? Auth::guard('sanctum')->id());
             $user->update($data);
 
             return $this->success(['user' => new ProfileResource($user), 'isSuccess' => true], "User updated successfully!");
@@ -52,6 +57,11 @@ class UserService extends BaseService
     public function activateAccount(string $token)
     {
         return User::where('activation_token', $token)->first()->update(['status' => 'active']);
+    }
+
+    public function getUserProfile()
+    {
+        return $this->success(['user' => new ProfileResource(Auth::guard('sanctum')->user()), 'isSuccess' => true], "User profile fetched successfully!");
     }
 }
 

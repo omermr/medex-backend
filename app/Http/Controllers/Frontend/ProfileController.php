@@ -19,4 +19,9 @@ class ProfileController extends Controller
     {
         return $this->userService->updateUserProfile($request->validated());
     }
+
+    public function show()
+    {
+        return $this->userService->getUserProfile();
+    }
 }

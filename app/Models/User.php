@@ -19,6 +19,7 @@ class User extends Authenticatable
     const ADMIN     = 1;
     const DOCTOR    = 2;
     const PATIENT   = 3;
+    const HOSPITAL  = 4;
 
     // User Gender
     const MALE      = 1;
@@ -100,6 +101,8 @@ class User extends Authenticatable
                 return 'doctor';
             case self::PATIENT:
                 return 'patient';
+            case self::HOSPITAL:
+                return 'hospital';
             default:
                 return 'unknown';
         }

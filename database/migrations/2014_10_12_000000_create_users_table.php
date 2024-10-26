@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->enum('role', [User::ADMIN, User::DOCTOR, User::PATIENT])->default(User::PATIENT);
+            $table->enum('role', [User::ADMIN, User::DOCTOR, User::PATIENT, User::HOSPITAL])->default(User::PATIENT);
             $table->enum('status', [User::ACTIVE, User::INACTIVE, User::PENDING])->default(User::INACTIVE);
             $table->string('avatar')->nullable();
             $table->string('provider')->nullable();
