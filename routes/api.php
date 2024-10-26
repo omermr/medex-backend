@@ -34,11 +34,16 @@ Route::prefix('auth')->group(function () {
 
 Route::group(['namespace' => 'App\Http\Controllers\Backend', 'middleware' => ['api', 'auth:sanctum']], function () {
     Route::apiResource('hospitals', 'HospitalController');
-    Route::post('hospitals/{hospital}/{status}', 'HospitalController@activation')->where('status', 'active|inactive');
+    Route::put('hospitals/{hospital}/{status}', 'HospitalController@activation')->where('status', 'active|inactive');
+    Route::apiResource('specialities', 'SpecialityController');
+    Route::apiResource('doctors', 'DoctorController');
+    Route::put('doctors/{doctor}/{status}', 'DoctorController@activation')->where('status', 'active|inactive');
 });
 
 Route::prefix('patient')->middleware(['api', 'auth:sanctum'])->namespace('App\Http\Controllers\Frontend')->group(function () {
     Route::put('profile', 'ProfileController@update');
     Route::get('profile', 'ProfileController@show');
+    Route::apiResource('hospitals', 'HospitalController')->only(['index', 'show']);
+    Route::apiResource('doctors', 'DoctorController')->only(['index', 'show']);
+    Route::apiResource('specialities', 'SpecialityController')->only(['index', 'show']);
 });
-Route::apiResource('omer/hospitals', 'App\Http\Controllers\Frontend\HospitalController')->only(['index', 'show']);

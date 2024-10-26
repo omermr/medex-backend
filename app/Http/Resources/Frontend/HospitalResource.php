@@ -15,17 +15,17 @@ class HospitalResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'name'      => $this->user->name,
-            'type'      => $this->type,
-            'cover'     => $this->cover,
-            'distance' => $this->when($this->distance, function () {
+            'id'            => $this->id,
+            'name'          => $this->user->name,
+            'type'          => $this->type,
+            'cover'         => $this->cover,
+            'distance'      => $this->when($this->distance, function () {
                 return $this->formatDistance($this->distance);
             }),
             'estimated_time' => $this->when($this->distance, function () {
                 return $this->formatTime($this->distance);
             }),
-            'status'    => $this->status
+            'status'        => $this->status
         ];
     }
 
